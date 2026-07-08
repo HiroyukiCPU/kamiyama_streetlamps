@@ -1,0 +1,549 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.279397,
+          33.958765
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "category": "避難所・AED・災害時用公衆電話",
+        "name": "上分公民館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害、洪水、台風、火災。収容可能人数70人。AED設置あり。特設公衆電話（事前設置）1台、設置場所は事務室・管理室。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.330752,
+          33.985871
+        ]
+      },
+      "properties": {
+        "id": 2,
+        "category": "AED",
+        "name": "左右内公民館",
+        "description": "神山町が公表しているAED設置場所。住所は施設検索情報を補助的に参照しているため、現地または町への確認を推奨。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.310953,
+          33.960094
+        ]
+      },
+      "properties": {
+        "id": 3,
+        "category": "避難所・AED・災害時用公衆電話",
+        "name": "下分公民館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害、洪水、台風、火災。収容可能人数80人。AED設置あり。特設公衆電話（事前設置）1台、設置場所は事務室・管理室。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.313113,
+          33.962171
+        ]
+      },
+      "properties": {
+        "id": 4,
+        "category": "福祉避難所・AED",
+        "name": "下分保育所",
+        "description": "指定福祉避難所。収容可能人数10人。AED設置あり。一般の指定避難所ではなく、要配慮者向けの施設として掲載。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.312018,
+          33.962011
+        ]
+      },
+      "properties": {
+        "id": 5,
+        "category": "指定緊急避難場所",
+        "name": "旧下分小学校運動場",
+        "description": "指定緊急避難場所。対応災害：地震、土砂災害。収容可能人数300人。指定避難所としては掲載されていない。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.35061,
+          33.967205
+        ]
+      },
+      "properties": {
+        "id": 6,
+        "category": "避難所・AED",
+        "name": "神山町役場",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害、洪水、台風、火災。収容可能人数80人。AED設置あり。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.350625,
+          33.966827
+        ]
+      },
+      "properties": {
+        "id": 7,
+        "category": "AED",
+        "name": "神山消防署",
+        "description": "神山町が公表しているAED設置場所。住所と座標は地図情報を補助的に参照。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.349266,
+          33.967191
+        ]
+      },
+      "properties": {
+        "id": 8,
+        "category": "AED",
+        "name": "福田歯科医院",
+        "description": "神山町が公表しているAED設置場所。診療時間外はAEDを利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.367614,
+          33.96854
+        ]
+      },
+      "properties": {
+        "id": 9,
+        "category": "AED",
+        "name": "COCO歯科",
+        "description": "神山町が公表しているAED設置場所。診療時間外はAEDを利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.370265,
+          33.971742
+        ]
+      },
+      "properties": {
+        "id": 10,
+        "category": "AED",
+        "name": "神山温泉いやしの湯",
+        "description": "神山町が公表しているAED設置場所。施設の営業時間外は利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.367803,
+          33.973584
+        ]
+      },
+      "properties": {
+        "id": 11,
+        "category": "AED",
+        "name": "道の駅「温泉の里神山」",
+        "description": "神山町が公表しているAED設置場所。道の駅内の具体的な設置位置と利用可能時間は施設への確認を推奨。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.342284,
+          33.968966
+        ]
+      },
+      "properties": {
+        "id": 12,
+        "category": "避難所・AED",
+        "name": "城西高校神山校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数200人。AED設置あり。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.342284,
+          33.968966
+        ]
+      },
+      "properties": {
+        "id": 13,
+        "category": "避難所",
+        "name": "城西高校神山校体育館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数180人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.342284,
+          33.968966
+        ]
+      },
+      "properties": {
+        "id": 14,
+        "category": "避難所",
+        "name": "城西高校神山校武道場",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数130人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.357587,
+          33.969146
+        ]
+      },
+      "properties": {
+        "id": 15,
+        "category": "避難所・AED",
+        "name": "神領小学校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数85人。AED設置あり。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.357587,
+          33.969146
+        ]
+      },
+      "properties": {
+        "id": 16,
+        "category": "避難所",
+        "name": "神領小学校体育館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数150人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.358226,
+          33.969617
+        ]
+      },
+      "properties": {
+        "id": 17,
+        "category": "避難所",
+        "name": "旧神領幼稚園",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数40人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.354396,
+          33.975161
+        ]
+      },
+      "properties": {
+        "id": 18,
+        "category": "指定緊急避難場所",
+        "name": "神山中学校運動場",
+        "description": "指定緊急避難場所。対応災害：地震、土砂災害。収容可能人数800人。指定避難所としては掲載されていない。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.360995,
+          33.97045
+        ]
+      },
+      "properties": {
+        "id": 19,
+        "category": "AED",
+        "name": "鮎喰川コモン",
+        "description": "神山町が公表しているAED設置場所。開館時間外はAEDを利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.361758,
+          33.968245
+        ]
+      },
+      "properties": {
+        "id": 20,
+        "category": "AED・災害時用公衆電話",
+        "name": "神山町農村環境改善センター",
+        "description": "AED設置あり。特設公衆電話（事前設置）1台、設置場所は事務室・管理室。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.366346,
+          33.974201
+        ]
+      },
+      "properties": {
+        "id": 21,
+        "category": "福祉避難所・AED",
+        "name": "神山町養護老人ホーム寿泉園",
+        "description": "指定福祉避難所。収容可能人数10人。AED設置あり。一般の指定避難所ではなく、要配慮者向けの施設として掲載。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.366346,
+          33.974201
+        ]
+      },
+      "properties": {
+        "id": 22,
+        "category": "AED",
+        "name": "神山町デイサービスセンター",
+        "description": "神山町が公表しているAED設置場所。施設の営業時間外は利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.421813,
+          34.006435
+        ]
+      },
+      "properties": {
+        "id": 28,
+        "category": "避難所",
+        "name": "旧鬼籠野小学校一ノ坂分校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数50人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.356361,
+          34.0048
+        ]
+      },
+      "properties": {
+        "id": 29,
+        "category": "避難所",
+        "name": "旧阿川小学校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数170人。座標は徳島県オープンデータの旧名称「阿川小学校」に基づく。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.35564,
+          34.005341
+        ]
+      },
+      "properties": {
+        "id": 30,
+        "category": "避難所・AED・災害時用公衆電話",
+        "name": "阿川公民館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害、洪水、台風、火災。収容可能人数60人。AED設置あり。特設公衆電話（事前設置）1台、設置場所は事務室・管理室。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.423502,
+          34.022786
+        ]
+      },
+      "properties": {
+        "id": 31,
+        "category": "AED",
+        "name": "神山森林公園イルローザの森",
+        "description": "神山町が公表しているAED設置場所。広い公園内の具体的な設置位置と利用可能時間は管理事務所への確認を推奨。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.401442,
+          34.026804
+        ]
+      },
+      "properties": {
+        "id": 32,
+        "category": "避難所・AED・災害時用公衆電話",
+        "name": "広野公民館（広野支所）",
+        "description": "避難施設一覧では「広野支所」として掲載された指定緊急避難場所・指定避難所。対応災害：地震、土砂災害、洪水、台風、火災。収容可能人数90人。AED設置あり。特設公衆電話（事前設置）1台、設置場所は玄関ホール。座標は施設地図情報を補助的に参照。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.405783,
+          34.029742
+        ]
+      },
+      "properties": {
+        "id": 33,
+        "category": "AED",
+        "name": "広野保育所",
+        "description": "神山町が公表しているAED設置場所。施設の開所時間外はAEDを利用できない可能性があるため、利用可能時間の確認が必要。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.403766,
+          34.030185
+        ]
+      },
+      "properties": {
+        "id": 34,
+        "category": "避難所・AED",
+        "name": "広野小学校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数180人。AED設置あり。座標は徳島県オープンデータに基づく。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.403766,
+          34.030185
+        ]
+      },
+      "properties": {
+        "id": 35,
+        "category": "避難所",
+        "name": "広野小学校体育館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数200人。座標は同一敷地の広野小学校座標を使用。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.403766,
+          34.030185
+        ]
+      },
+      "properties": {
+        "id": 36,
+        "category": "指定緊急避難場所",
+        "name": "広野小学校運動場",
+        "description": "指定緊急避難場所。対応災害：地震。収容可能人数450人。指定避難所としては掲載されていない。座標は同一敷地の広野小学校座標を使用。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.403508,
+          34.029109
+        ]
+      },
+      "properties": {
+        "id": 37,
+        "category": "避難所",
+        "name": "旧広野小学校",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数180人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.403508,
+          34.029109
+        ]
+      },
+      "properties": {
+        "id": 38,
+        "category": "避難所",
+        "name": "旧広野小学校体育館",
+        "description": "指定緊急避難場所・指定避難所。対応災害：地震、土砂災害。収容可能人数100人。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.416683,
+          34.050015
+        ]
+      },
+      "properties": {
+        "id": 39,
+        "category": "福祉避難所・AED",
+        "name": "特別養護老人ホーム神山すだち園",
+        "description": "指定福祉避難所。収容可能人数20人。AED設置あり。一般の指定避難所ではなく、要配慮者向けの施設として掲載。"
+      }
+    }
+  ]
+}
