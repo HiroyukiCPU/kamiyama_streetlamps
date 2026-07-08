@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POI Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #d9dee7;
+      --primary: #2563eb;
+      --safe: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --shadow: 0 10px 30px rgba(23, 32, 51, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      z-index: 20;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    main {
+      position: relative;
+      min-height: 0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: min(340px, calc(100vw - 32px));
+      max-height: calc(100% - 32px);
+      overflow: auto;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panel-title strong {
+      font-size: 15px;
+    }
+
+    .count {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .poi-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .poi-item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      text-align: left;
+    }
+
+    .poi-item.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 5px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .dot.shelter {
+      background: var(--safe);
+    }
+
+    .dot.aed {
+      background: var(--danger);
+    }
+
+    .dot.water {
+      background: var(--primary);
+    }
+
+    .dot.phone {
+      background: var(--warning);
+    }
+
+    .poi-name {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .poi-meta {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .popup-title {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .popup-text {
+      margin: 0;
+      color: #475467;
+      line-height: 1.5;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 14px;
+      }
+
+      .status {
+        white-space: normal;
+      }
+
+      .panel {
+        left: 10px;
+        right: 10px;
+        top: auto;
+        bottom: 10px;
+        width: auto;
+        max-height: 42%;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>学校周辺POIマップ</h1>
+    <div class="status" id="status">地図を読み込み中</div>
+  </header>
+
+  <main>
+    <div id="map"></div>
+    <section class="panel" aria-label="POI一覧">
+      <div class="panel-title">
+        <strong>POI一覧</strong>
+        <span class="count" id="count">0件</span>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="poi-list" id="poiList"></div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const fallbackGeoJson = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            name: "サンプル避難所",
+            category: "shelter",
+            categoryLabel: "避難所",
+            description: "災害時の一時避難先として登録する場所です。"
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [134.35693, 33.96678]
+          }
+        },
+        {
+          type: "Feature",
+          properties: {
+            name: "サンプルAED",
+            category: "aed",
+            categoryLabel: "AED",
+            description: "施設入口や受付付近など、AEDの設置場所を登録できます。"
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [134.36018, 33.96836]
+          }
+        },
+        {
+          type: "Feature",
+          properties: {
+            name: "サンプル給水地点",
+            category: "water",
+            categoryLabel: "給水地点",
+            description: "非常時に水を確保できる地点です。"
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [134.35462, 33.96472]
+          }
+        },
+        {
+          type: "Feature",
+          properties: {
+            name: "サンプル公衆電話",
+            category: "phone",
+            categoryLabel: "公衆電話",
+            description: "携帯電話が使えない場合の連絡手段として登録できます。"
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [134.36223, 33.96535]
+          }
+        }
+      ]
+    };
+
+    const categoryNames = {
+      all: "すべて",
+      shelter: "避難所",
+      aed: "AED",
+      water: "給水地点",
+      phone: "公衆電話"
+    };
+
+    const categoryColors = {
+      shelter: "#16a34a",
+      aed: "#dc2626",
+      water: "#2563eb",
+      phone: "#d97706",
+      default: "#475467"
+    };
+
+    const map = L.map("map", {
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    const statusEl = document.getElementById("status");
+    const countEl = document.getElementById("count");
+    const filtersEl = document.getElementById("filters");
+    const poiListEl = document.getElementById("poiList");
+
+    let geoJsonLayer = null;
+    let currentCategory = "all";
+    let loadedFeatures = [];
+    let markers = new Map();
+
+    function markerStyle(category) {
+      const color = categoryColors[category] || categoryColors.default;
+      return {
+        radius: 9,
+        fillColor: color,
+        color: "#ffffff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.92
+      };
+    }
+
+    function popupHtml(properties) {
+      const name = escapeHtml(properties.name || "名称未設定");
+      const label = escapeHtml(properties.categoryLabel || categoryNames[properties.category] || "POI");
+      const description = escapeHtml(properties.description || "");
+      return `<p class="popup-title">${name}</p><p class="popup-text">${label}</p>${description ? `<p class="popup-text">${description}</p>` : ""}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function validPoint(feature) {
+      return feature &&
+        feature.type === "Feature" &&
+        feature.geometry &&
+        feature.geometry.type === "Point" &&
+        Array.isArray(feature.geometry.coordinates) &&
+        feature.geometry.coordinates.length >= 2 &&
+        Number.isFinite(feature.geometry.coordinates[0]) &&
+        Number.isFinite(feature.geometry.coordinates[1]);
+    }
+
+    function filteredFeatures() {
+      if (currentCategory === "all") {
+        return loadedFeatures;
+      }
+      return loadedFeatures.filter((feature) => feature.properties?.category === currentCategory);
+    }
+
+    function renderFilters() {
+      const categories = ["all", ...new Set(loadedFeatures.map((feature) => feature.properties?.category).filter(Boolean))];
+      filtersEl.innerHTML = "";
+
+      categories.forEach((category) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = categoryNames[category] || category;
+        button.className = category === currentCategory ? "active" : "";
+        button.addEventListener("click", () => {
+          currentCategory = category;
+          renderMap();
+          renderFilters();
+          renderList();
+        });
+        filtersEl.appendChild(button);
+      });
+    }
+
+    function renderMap() {
+      if (geoJsonLayer) {
+        geoJsonLayer.remove();
+      }
+
+      markers = new Map();
+      const features = filteredFeatures();
+
+      geoJsonLayer = L.geoJSON({
+        type: "FeatureCollection",
+        features
+      }, {
+        pointToLayer(feature, latlng) {
+          return L.circleMarker(latlng, markerStyle(feature.properties?.category));
+        },
+        onEachFeature(feature, layer) {
+          const id = feature.properties?.id || feature.properties?.name || `${feature.geometry.coordinates[0]},${feature.geometry.coordinates[1]}`;
+          markers.set(id, layer);
+          layer.bindPopup(popupHtml(feature.properties || {}));
+          layer.on("click", () => activateListItem(id));
+        }
+      }).addTo(map);
+
+      countEl.textContent = `${features.length}件`;
+
+      if (features.length > 0) {
+        map.fitBounds(geoJsonLayer.getBounds().pad(0.18));
+      } else {
+        map.setView([35.681236, 139.767125], 13);
+      }
+    }
+
+    function renderList() {
+      const features = filteredFeatures();
+      poiListEl.innerHTML = "";
+
+      if (features.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "poi-meta";
+        empty.textContent = "表示できるPOIがありません。";
+        poiListEl.appendChild(empty);
+        return;
+      }
+
+      features.forEach((feature) => {
+        const properties = feature.properties || {};
+        const id = properties.id || properties.name || `${feature.geometry.coordinates[0]},${feature.geometry.coordinates[1]}`;
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "poi-item";
+        item.dataset.id = id;
+
+        const dot = document.createElement("span");
+        dot.className = `dot ${properties.category || ""}`;
+
+        const body = document.createElement("span");
+        const name = document.createElement("span");
+        name.className = "poi-name";
+        name.textContent = properties.name || "名称未設定";
+
+        const meta = document.createElement("span");
+        meta.className = "poi-meta";
+        meta.textContent = properties.categoryLabel || categoryNames[properties.category] || "POI";
+
+        body.append(name, meta);
+        item.append(dot, body);
+        item.addEventListener("click", () => {
+          const marker = markers.get(id);
+          if (!marker) {
+            return;
+          }
+          activateListItem(id);
+          map.setView(marker.getLatLng(), Math.max(map.getZoom(), 16));
+          marker.openPopup();
+        });
+        poiListEl.appendChild(item);
+      });
+    }
+
+    function activateListItem(id) {
+      document.querySelectorAll(".poi-item.active").forEach((item) => item.classList.remove("active"));
+      const target = document.querySelector(`.poi-item[data-id="${CSS.escape(id)}"]`);
+      if (target) {
+        target.classList.add("active");
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+
+    async function loadGeoJson() {
+      try {
+        const response = await fetch("pois.geojson", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("pois.geojson not found");
+        }
+        const data = await response.json();
+        statusEl.textContent = "pois.geojsonを表示中";
+        return data;
+      } catch {
+        statusEl.textContent = "サンプルGeoJSONを表示中";
+        return fallbackGeoJson;
+      }
+    }
+
+    async function init() {
+      const data = await loadGeoJson();
+      loadedFeatures = Array.isArray(data.features) ? data.features.filter(validPoint) : [];
+      renderFilters();
+      renderMap();
+      renderList();
+    }
+
+    init();
+  </script>
+</body>
+</html>
