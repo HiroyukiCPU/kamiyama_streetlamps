@@ -56,7 +56,6 @@
       margin: 0;
       font-size: 18px;
       line-height: 1.25;
-      letter-spacing: 0;
     }
 
     .status {
@@ -113,11 +112,21 @@
       font-weight: 700;
     }
 
+    .filter-block {
+      margin-bottom: 12px;
+    }
+
+    .filter-label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 12px;
     }
 
     button {
@@ -185,6 +194,7 @@
     }
 
     .poi-name {
+      display: block;
       margin: 0;
       font-size: 14px;
       font-weight: 700;
@@ -199,6 +209,24 @@
       line-height: 1.45;
     }
 
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: #f2f4f7;
+      color: #475467;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
     .popup-title {
       margin: 0 0 6px;
       font-size: 15px;
@@ -211,22 +239,11 @@
       line-height: 1.5;
     }
 
-    .tag-list {
+    .popup-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
-      margin-top: 6px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #f2f4f7;
-      color: #475467;
-      font-size: 11px;
-      line-height: 1.5;
+      margin-top: 8px;
     }
 
     .leaflet-popup-content-wrapper {
@@ -255,7 +272,7 @@
         top: auto;
         bottom: 10px;
         width: auto;
-        max-height: 42%;
+        max-height: 48%;
         padding: 12px;
       }
     }
@@ -274,7 +291,14 @@
         <strong>POI一覧</strong>
         <span class="count" id="count">0件</span>
       </div>
-      <div class="filters" id="filters"></div>
+      <div class="filter-block">
+        <div class="filter-label">カテゴリ</div>
+        <div class="filters" id="categoryFilters"></div>
+      </div>
+      <div class="filter-block">
+        <div class="filter-label">タグ</div>
+        <div class="filters" id="tagFilters"></div>
+      </div>
       <div class="poi-list" id="poiList"></div>
     </section>
   </main>
@@ -287,11 +311,11 @@
         {
           type: "Feature",
           properties: {
-            id: "sample_shelter",
+            id: "sample_001",
             name: "サンプル避難所",
             category: "shelter",
             categoryLabel: "避難所",
-            tags: ["避難所", "トイレ", "集合場所"],
+            tags: ["AED", "トイレ"],
             description: "災害時の一時避難先として登録する場所です。"
           },
           geometry: {
@@ -302,12 +326,11 @@
         {
           type: "Feature",
           properties: {
-            id: "sample_aed",
+            id: "sample_002",
             name: "サンプルAED",
-            category: "aed",
+            category: ["aed", "AED"],
             categoryLabel: "AED",
-            tags: ["AED", "緊急", "屋内"],
-            description: "施設入口や受付付近など、AEDの設置場所を登録できます。"
+            description: "categoryに配列で入っている値も読み込めます。"
           },
           geometry: {
             type: "Point",
@@ -317,12 +340,12 @@
         {
           type: "Feature",
           properties: {
-            id: "sample_water",
+            id: "sample_003",
             name: "サンプル給水地点",
-            category: "water",
+            category: "water|給水地点",
             categoryLabel: "給水地点",
-            tags: ["給水地点", "水", "屋外"],
-            description: "非常時に水を確保できる地点です。"
+            tags: "水|防災",
+            description: "categoryやtagsが区切り文字の文字列でも読み込めます。"
           },
           geometry: {
             type: "Point",
@@ -332,11 +355,11 @@
         {
           type: "Feature",
           properties: {
-            id: "sample_phone",
+            id: "sample_004",
             name: "サンプル公衆電話",
             category: "phone",
             categoryLabel: "公衆電話",
-            tags: ["公衆電話", "災害時連絡", "屋外"],
+            tags: ["連絡", "防災"],
             description: "携帯電話が使えない場合の連絡手段として登録できます。"
           },
           geometry: {
@@ -363,14 +386,6 @@
       default: "#475467"
     };
 
-    const tagCategoryMap = {
-      避難所: "shelter",
-      AED: "aed",
-      給水地点: "water",
-      水: "water",
-      公衆電話: "phone"
-    };
-
     const map = L.map("map", {
       zoomControl: true,
       scrollWheelZoom: true
@@ -383,13 +398,56 @@
 
     const statusEl = document.getElementById("status");
     const countEl = document.getElementById("count");
-    const filtersEl = document.getElementById("filters");
+    const categoryFiltersEl = document.getElementById("categoryFilters");
+    const tagFiltersEl = document.getElementById("tagFilters");
     const poiListEl = document.getElementById("poiList");
 
     let geoJsonLayer = null;
+    let currentCategory = "all";
     let currentTag = "all";
     let loadedFeatures = [];
     let markers = new Map();
+
+    function toArray(value) {
+      if (Array.isArray(value)) {
+        return value.map((item) => String(item).trim()).filter(Boolean);
+      }
+
+      if (typeof value === "string") {
+        return value
+          .split(/[|,、]/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      if (value === undefined || value === null) {
+        return [];
+      }
+
+      return [String(value).trim()].filter(Boolean);
+    }
+
+    function uniq(values) {
+      return [...new Set(values.filter(Boolean))];
+    }
+
+    function categoriesOf(feature) {
+      return toArray(feature.properties?.category);
+    }
+
+    function tagsOf(feature) {
+      const properties = feature.properties || {};
+      return uniq([...toArray(properties.tags), ...toArray(properties.category)]);
+    }
+
+    function mainCategoryOf(properties) {
+      const categories = toArray(properties.category);
+      return categories[0] || "default";
+    }
+
+    function labelOf(value) {
+      return categoryNames[value] || value;
+    }
 
     function markerStyle(category) {
       const color = categoryColors[category] || categoryColors.default;
@@ -403,15 +461,6 @@
       };
     }
 
-    function popupHtml(properties) {
-      const name = escapeHtml(properties.name || "名称未設定");
-      const label = escapeHtml(getMainLabel(properties));
-      const tags = normalizeTags(properties.tags);
-      const tagHtml = tags.length > 0 ? `<div class="tag-list">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` : "";
-      const description = escapeHtml(properties.description || "");
-      return `<p class="popup-title">${name}</p><p class="popup-text">${label}</p>${description ? `<p class="popup-text">${description}</p>` : ""}${tagHtml}`;
-    }
-
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -419,6 +468,23 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function tagsHtml(tags) {
+      if (tags.length === 0) {
+        return "";
+      }
+
+      return `<span class="popup-tags">${tags.map((tag) => `<span class="tag">${escapeHtml(labelOf(tag))}</span>`).join("")}</span>`;
+    }
+
+    function popupHtml(properties) {
+      const name = escapeHtml(properties.name || "名称未設定");
+      const category = mainCategoryOf(properties);
+      const label = escapeHtml(properties.categoryLabel || labelOf(category) || "POI");
+      const description = escapeHtml(properties.description || "");
+      const tags = tagsOf({ properties });
+      return `<p class="popup-title">${name}</p><p class="popup-text">${label}</p>${description ? `<p class="popup-text">${description}</p>` : ""}${tagsHtml(tags)}`;
     }
 
     function validPoint(feature) {
@@ -432,72 +498,47 @@
         Number.isFinite(feature.geometry.coordinates[1]);
     }
 
-    function normalizeTags(tags) {
-      if (Array.isArray(tags)) {
-        return tags.map((tag) => String(tag).trim()).filter(Boolean);
-      }
-      if (typeof tags === "string") {
-        return tags.split(/[|,、]/).map((tag) => tag.trim()).filter(Boolean);
-      }
-      return [];
-    }
-
-    function getFeatureTags(feature) {
-      return normalizeTags(feature.properties?.tags);
-    }
-
-    function getMainCategory(properties) {
-      if (properties.category) {
-        return properties.category;
-      }
-      const tags = normalizeTags(properties.tags);
-      const matchedTag = tags.find((tag) => tagCategoryMap[tag]);
-      return matchedTag ? tagCategoryMap[matchedTag] : "default";
-    }
-
-    function getMainLabel(properties) {
-      if (properties.categoryLabel) {
-        return properties.categoryLabel;
-      }
-      if (properties.category && categoryNames[properties.category]) {
-        return categoryNames[properties.category];
-      }
-      const tags = normalizeTags(properties.tags);
-      return tags[0] || "POI";
-    }
-
-    function getFeatureId(feature) {
-      const properties = feature.properties || {};
-      return properties.id || properties.name || `${feature.geometry.coordinates[0]},${feature.geometry.coordinates[1]}`;
-    }
-
     function filteredFeatures() {
-      if (currentTag === "all") {
-        return loadedFeatures;
-      }
-      return loadedFeatures.filter((feature) => getFeatureTags(feature).includes(currentTag));
+      return loadedFeatures.filter((feature) => {
+        const matchesCategory = currentCategory === "all" || categoriesOf(feature).includes(currentCategory);
+        const matchesTag = currentTag === "all" || tagsOf(feature).includes(currentTag);
+        return matchesCategory && matchesTag;
+      });
+    }
+
+    function renderFilterButtons(container, values, currentValue, onChange) {
+      container.innerHTML = "";
+
+      values.forEach((value) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = value === "all" ? "すべて" : labelOf(value);
+        button.className = value === currentValue ? "active" : "";
+        button.addEventListener("click", () => {
+          onChange(value);
+          renderFilters();
+          renderMap();
+          renderList();
+        });
+        container.appendChild(button);
+      });
     }
 
     function renderFilters() {
-      const tags = [
-        "all",
-        ...new Set(loadedFeatures.flatMap((feature) => getFeatureTags(feature)))
-      ];
-      filtersEl.innerHTML = "";
+      const categories = ["all", ...uniq(loadedFeatures.flatMap(categoriesOf))];
+      const tags = ["all", ...uniq(loadedFeatures.flatMap(tagsOf))];
 
-      tags.forEach((tag) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = tag === "all" ? categoryNames.all : tag;
-        button.className = tag === currentTag ? "active" : "";
-        button.addEventListener("click", () => {
-          currentTag = tag;
-          renderMap();
-          renderFilters();
-          renderList();
-        });
-        filtersEl.appendChild(button);
+      renderFilterButtons(categoryFiltersEl, categories, currentCategory, (value) => {
+        currentCategory = value;
       });
+
+      renderFilterButtons(tagFiltersEl, tags, currentTag, (value) => {
+        currentTag = value;
+      });
+    }
+
+    function featureId(feature) {
+      return feature.properties?.id || feature.properties?.name || `${feature.geometry.coordinates[0]},${feature.geometry.coordinates[1]}`;
     }
 
     function renderMap() {
@@ -513,10 +554,10 @@
         features
       }, {
         pointToLayer(feature, latlng) {
-          return L.circleMarker(latlng, markerStyle(getMainCategory(feature.properties || {})));
+          return L.circleMarker(latlng, markerStyle(mainCategoryOf(feature.properties || {})));
         },
         onEachFeature(feature, layer) {
-          const id = getFeatureId(feature);
+          const id = featureId(feature);
           markers.set(id, layer);
           layer.bindPopup(popupHtml(feature.properties || {}));
           layer.on("click", () => activateListItem(id));
@@ -546,36 +587,51 @@
 
       features.forEach((feature) => {
         const properties = feature.properties || {};
-        const id = getFeatureId(feature);
+        const id = featureId(feature);
+        const category = mainCategoryOf(properties);
+        const tags = tagsOf(feature);
+
         const item = document.createElement("button");
         item.type = "button";
         item.className = "poi-item";
         item.dataset.id = id;
 
         const dot = document.createElement("span");
-        dot.className = `dot ${getMainCategory(properties)}`;
+        dot.className = `dot ${category}`;
 
         const body = document.createElement("span");
+
         const name = document.createElement("span");
         name.className = "poi-name";
         name.textContent = properties.name || "名称未設定";
 
         const meta = document.createElement("span");
         meta.className = "poi-meta";
-        const tags = normalizeTags(properties.tags);
-        meta.textContent = tags.length > 0 ? tags.join(" / ") : getMainLabel(properties);
+        meta.textContent = properties.categoryLabel || labelOf(category) || "POI";
 
-        body.append(name, meta);
+        const tagList = document.createElement("span");
+        tagList.className = "tag-list";
+        tags.forEach((tag) => {
+          const tagEl = document.createElement("span");
+          tagEl.className = "tag";
+          tagEl.textContent = labelOf(tag);
+          tagList.appendChild(tagEl);
+        });
+
+        body.append(name, meta, tagList);
         item.append(dot, body);
+
         item.addEventListener("click", () => {
           const marker = markers.get(id);
           if (!marker) {
             return;
           }
+
           activateListItem(id);
           map.setView(marker.getLatLng(), Math.max(map.getZoom(), 16));
           marker.openPopup();
         });
+
         poiListEl.appendChild(item);
       });
     }
@@ -583,6 +639,7 @@
     function activateListItem(id) {
       document.querySelectorAll(".poi-item.active").forEach((item) => item.classList.remove("active"));
       const target = document.querySelector(`.poi-item[data-id="${CSS.escape(id)}"]`);
+
       if (target) {
         target.classList.add("active");
         target.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -607,6 +664,7 @@
     async function init() {
       const data = await loadGeoJson();
       loadedFeatures = Array.isArray(data.features) ? data.features.filter(validPoint) : [];
+
       renderFilters();
       renderMap();
       renderList();
