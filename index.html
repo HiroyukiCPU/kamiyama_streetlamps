@@ -292,8 +292,8 @@
         <span class="count" id="count">0件</span>
       </div>
       <div class="filter-block">
-        <div class="filter-label">カテゴリ</div>
-        <div class="filters" id="categoryFilters"></div>
+        <div class="filter-label">フィルター</div>
+        <div class="filters" id="filters"></div>
       </div>
       <div class="poi-list" id="poiList"></div>
     </section>
@@ -326,7 +326,7 @@
             name: "サンプルAED",
             category: ["aed", "AED"],
             categoryLabel: "AED",
-            description: "categoryに配列で入っている値も読み込めます。"
+            description: "categoryに配列で入っている値もフィルターに表示されます。"
           },
           geometry: {
             type: "Point",
@@ -394,13 +394,11 @@
 
     const statusEl = document.getElementById("status");
     const countEl = document.getElementById("count");
-    const categoryFiltersEl = document.getElementById("categoryFilters");
-    const tagFiltersEl = document.getElementById("tagFilters");
+    const filtersEl = document.getElementById("filters");
     const poiListEl = document.getElementById("poiList");
 
     let geoJsonLayer = null;
-    let currentCategory = "all";
-    let currentTag = "all";
+    let currentFilter = "all";
     let loadedFeatures = [];
     let markers = new Map();
 
@@ -432,8 +430,15 @@
     }
 
     function tagsOf(feature) {
-      const properties = feature.properties || {};
-      return uniq([...toArray(properties.tags), ...toArray(properties.category)]);
+      return toArray(feature.properties?.tags);
+    }
+
+    function filterValuesOf(feature) {
+      return uniq([...categoriesOf(feature), ...tagsOf(feature)]);
+    }
+
+    function visibleTagsOf(feature) {
+      return uniq(tagsOf(feature));
     }
 
     function mainCategoryOf(properties) {
@@ -479,7 +484,7 @@
       const category = mainCategoryOf(properties);
       const label = escapeHtml(properties.categoryLabel || labelOf(category) || "POI");
       const description = escapeHtml(properties.description || "");
-      const tags = tagsOf({ properties });
+      const tags = visibleTagsOf({ properties });
       return `<p class="popup-title">${name}</p><p class="popup-text">${label}</p>${description ? `<p class="popup-text">${description}</p>` : ""}${tagsHtml(tags)}`;
     }
 
@@ -495,41 +500,30 @@
     }
 
     function filteredFeatures() {
-      return loadedFeatures.filter((feature) => {
-        const matchesCategory = currentCategory === "all" || categoriesOf(feature).includes(currentCategory);
-        const matchesTag = currentTag === "all" || tagsOf(feature).includes(currentTag);
-        return matchesCategory && matchesTag;
-      });
+      if (currentFilter === "all") {
+        return loadedFeatures;
+      }
+
+      return loadedFeatures.filter((feature) => filterValuesOf(feature).includes(currentFilter));
     }
 
-    function renderFilterButtons(container, values, currentValue, onChange) {
-      container.innerHTML = "";
+    function renderFilters() {
+      const filters = ["all", ...uniq(loadedFeatures.flatMap(filterValuesOf))];
 
-      values.forEach((value) => {
+      filtersEl.innerHTML = "";
+
+      filters.forEach((value) => {
         const button = document.createElement("button");
         button.type = "button";
         button.textContent = value === "all" ? "すべて" : labelOf(value);
-        button.className = value === currentValue ? "active" : "";
+        button.className = value === currentFilter ? "active" : "";
         button.addEventListener("click", () => {
-          onChange(value);
+          currentFilter = value;
           renderFilters();
           renderMap();
           renderList();
         });
-        container.appendChild(button);
-      });
-    }
-
-    function renderFilters() {
-      const categories = ["all", ...uniq(loadedFeatures.flatMap(categoriesOf))];
-      const tags = ["all", ...uniq(loadedFeatures.flatMap(tagsOf))];
-
-      renderFilterButtons(categoryFiltersEl, categories, currentCategory, (value) => {
-        currentCategory = value;
-      });
-
-      renderFilterButtons(tagFiltersEl, tags, currentTag, (value) => {
-        currentTag = value;
+        filtersEl.appendChild(button);
       });
     }
 
@@ -585,7 +579,7 @@
         const properties = feature.properties || {};
         const id = featureId(feature);
         const category = mainCategoryOf(properties);
-        const tags = tagsOf(feature);
+        const tags = visibleTagsOf(feature);
 
         const item = document.createElement("button");
         item.type = "button";
