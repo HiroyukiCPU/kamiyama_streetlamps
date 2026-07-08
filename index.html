@@ -510,12 +510,12 @@
 
     async function loadGeoJson() {
       try {
-        const response = await fetch("pois.geojson", { cache: "no-store" });
+        const response = await fetch("dataset.geojson", { cache: "no-store" });
         if (!response.ok) {
-          throw new Error("pois.geojson not found");
+          throw new Error("dataset.geojson not found");
         }
         const data = await response.json();
-        statusEl.textContent = "pois.geojsonを表示中";
+        statusEl.textContent = "dataset.geojsonを表示中";
         return data;
       } catch {
         statusEl.textContent = "サンプルGeoJSONを表示中";
